@@ -1,156 +1,102 @@
+/*
+CISC 4090
+Dr. Frank Hsu
+Theory of Computation Final Project: Push-down Automata 
+By: Winsor Tse, Robert Riccelli, Alexander Plaza, Albert Ezizov, Md Rahman 
+*/
 
 import java.util.LinkedHashMap;
 import java.util.ArrayList;
 import java.util.Scanner;
 import java.util.*;
 
-public class main{
+
+
+
+public class pushdownautomata{
 
     public static void main(String args[]){
-        //print_output("----", "-----", "-", "", "", "", 5);
 
-        //Linked HasMap vs HashMap
-        //HashMap places entries in order (a-z)
-        //LinkedHashMap mantains order
+        //LinkedHashMap stores the rules for the PDA, where the left is the state and the right is the new state/rule number
         LinkedHashMap<ArrayList<String>,ArrayList<String>> map = new LinkedHashMap<ArrayList<String>,ArrayList<String>>();
-        ArrayList<String> list = new ArrayList<String>();
-        ArrayList<String> list2 = new ArrayList<String>();
-        ArrayList<String> list3 = new ArrayList<String>();
-        ArrayList<String> list4 = new ArrayList<String>();
-        ArrayList<String> list5 = new ArrayList<String>();
-        ArrayList<String> list6 = new ArrayList<String>();
-        ArrayList<String> list7 = new ArrayList<String>();
-        ArrayList<String> list8 = new ArrayList<String>();
-        ArrayList<String> list9 = new ArrayList<String>();
-        ArrayList<String> list10 = new ArrayList<String>();
-        ArrayList<String> list11 = new ArrayList<String>();
-        ArrayList<String> list12 = new ArrayList<String>();
-        ArrayList<String> list13 = new ArrayList<String>();
-        ArrayList<String> list14 = new ArrayList<String>();
-        ArrayList<String> list15 = new ArrayList<String>();
-        ArrayList<String> list16 = new ArrayList<String>();
+
+        //common strings used in each column of the PDA
         String[] first_column = {"p","q","qa","qb"};
         String[] second_column = {"a","b","$","S"};
         String[] third_column = {"q","qa","q$","qa","qb"};
         String[] fourth_column = {"S","aSb"};
         String[] fifth_column = {"1","2","3","4","5","6","7","8"};
 
+        //fillHashMap fills the hashmap based on given strings
         //first row
-        list.add(first_column[0]);
-        list.add("");
-        list2.add(third_column[0]);
-        list2.add(fourth_column[0]);
-        list2.add(fifth_column[0]);
-
-        map.put(list,list2);
-
+        fillHashMap(map, first_column[0], "", third_column[0], fourth_column[0], fifth_column[0]);
         //second row
-        list3.add(first_column[1]);
-        list3.add(second_column[0]);
-        list4.add(third_column[1]);
-        list4.add("");
-        list4.add(fifth_column[1]);
-
-        map.put(list3,list4);
-
+        fillHashMap(map, first_column[1], second_column[0], third_column[1], "", fifth_column[1]);
         //thrid row
-        list5.add(first_column[2]);
-        list5.add(second_column[0]);
-        list6.add(third_column[0]);
-        list6.add("");
-        list6.add(fifth_column[2]);
-
-        map.put(list5,list6);
-
+        fillHashMap(map, first_column[2], second_column[0], third_column[0], "", fifth_column[2]);
         //fourth row
-        list7.add(first_column[1]);
-        list7.add("b");
-        list8.add(third_column[4]);
-        list8.add("");
-        list8.add(fifth_column[3]);
-
-        map.put(list7,list8);
-
+        fillHashMap(map, first_column[1], second_column[1], third_column[4], "", fifth_column[3]);
         //fifth row
-        list9.add(first_column[3]);
-        list9.add(second_column[1]);
-        list10.add(third_column[0]);
-        list10.add("");
-        list10.add(fifth_column[4]);
-
-        map.put(list9,list10);
-
+        fillHashMap(map, first_column[3], second_column[1], third_column[0], "", fifth_column[4]);
         //sixth row
-        list11.add(first_column[1]);
-        list11.add(second_column[2]);
-        list12.add(third_column[2]);
-        list12.add("");
-        list12.add(fifth_column[5]);
-        map.put(list11,list12);
-
+        fillHashMap(map, first_column[1], second_column[2], third_column[2], "", fifth_column[5]);
         //seventh row
-        list13.add(first_column[2]);
-        list13.add(second_column[3]);
-        list14.add(third_column[3]);
-        list14.add("aSb");
-        list14.add(fifth_column[6]);
-        map.put(list13,list14);
-
+        fillHashMap(map, first_column[2], second_column[3], third_column[3],  fourth_column[1], fifth_column[6]);
         //eigth row
-        list15.add(first_column[3]);
-        list15.add(second_column[3]);
-        list16.add(third_column[4]);
-        list16.add("");
-        list16.add(fifth_column[7]);
-        map.put(list15,list16);
-        System.out.println(map);
-//--------------------------------------------------------------------------
+        fillHashMap(map, first_column[3], second_column[3], third_column[4],  "", fifth_column[7]);
 
-
-        //int n used for input string
+        //measures the number of a's and b's to match userinput
         int n=0;
-        //fills test case
+        //stores the testcases to be matched with userinput
         ArrayList<String> testcase = new ArrayList<String>();
-
+        //fills the ArrayList of testcases
         filltestcases(testcase);
         System.out.println(testcase);
 
-        //loop that checks if users input is valid
-        ArrayList<String> userinput = new ArrayList<String>();
-
+        //takes in input from user
         Scanner myObj = new Scanner(System.in);
         System.out.println("Input a test case:");
         String temp = myObj.nextLine();
 
+        //checks for a valid input that matches the testcases
         for(int i=0; i<testcase.size(); i++){
+            //if the input matches the testcase
             if(temp.equals(testcase.get(i))){
+                //store the number of occurances of a and b, and break
                 n = i +2;
                 break;
             }
             if(i==8){
-                System.out.println(temp + "is not in test cases");
+                //once it reaches the maximum length, exit the program
+                System.out.println(temp + "is not in test cases exiting program");
                 System.exit(0);
             }
         }
-        //add more than 1?
-        System.out.println("N is equal to " + n);
+
+        print_output("Step", "State", "Input", "Stack", "Rule", "R used", n);
+
+
+        //keeps track of step number
         int stepnumber = 0;
+        //starting state, also keeps track of current state
         String state = "p";
         String charA = "a";
         String charB = "b";
         String dollar = "$";
+        //current input string entered by user, repeats the characters based on the input
         String inputstring = charA.repeat(n) + charB.repeat(n) + dollar;
+        //string stack1, keeps track of the remaining input string we have left
+        //updates out of the while loop
         String stack1 = "";
+        //tracks the Rule
         String R;
+        print_output("0", "p", inputstring, "e", "~~", "", n);
 
-        //prints 3 lines of table
-
-        //processing function?
-        //rules = map
-        // stacks(stack2) and stack(stack1) are two different stacks
+        //keeps looping until the inputString is Empty
         while(inputstring.isEmpty()==false){
+            //current stack to search the hashmap and shorten the userinput
             String stack2 = "";
-            //use either contain or equals
+
             if(state.equals("p")){
                 stack2="";
             }
@@ -161,20 +107,17 @@ public class main{
                 stack2 = Character.toString(stack1.charAt(0));
             }
 
-            //Searching through the hashmap -----------------------------------------
-
+            //Arraylist that stores the right part of the Hashmap eg. [p, ]= *[q, S, 1]
             ArrayList<String> nextStep = new ArrayList<String>();
-            nextStep.add(" ");
+            //Arraylist that searches Hashmap using the left part of the Hashamp eg. *[p, ]= [q, S, 1]
             ArrayList<String> search = new ArrayList<String>();
+            
+            //add the current state and current stack (stack2)
             search.add(state);
-            //stack1 relooping should be a not S
             search.add(stack2);
-            //error
+            //searches through the left part of the Hashmap and stores it in nextStep
             nextStep = map.get(search);
-            //System.out.println("Transversing through hasmap to find this " + search);
-            //System.out.println("This is next step: " + map.get(search));
 
-            //Searching through the hashmap -----------------------------------------
 
             if(state.equals("q")){
                 stack2  = inputstring.substring(1, inputstring.length());
@@ -182,9 +125,10 @@ public class main{
             else{
                 stack2 = inputstring;
             }
+            //increase stepnumber
             stepnumber++;
+            //inputstring is shortened by stack2 or current stack
             inputstring = stack2;
-            //System.out.println("inputstring is" + inputstring);
 
             if(state.substring(1, state.length()).isEmpty()==false){
                 stack2  = stack1.substring(1, stack1.length());
@@ -193,10 +137,10 @@ public class main{
                 stack2 = stack1;
             }
 
+            //get the state eg. [q, S, 1] which would be q
             state = nextStep.get(0);
-            //System.out.println("state is " + state);
+            //get the stack eg. [q, S, 1] which would be S plus the current stack (stack2)
             stack1 = nextStep.get(1) + stack2;
-            //System.out.println("stack1 is " + stack1);
 
             if((nextStep.get(2)).equals("7")){
                 R = "S -> aSb";
@@ -208,6 +152,7 @@ public class main{
                 R = "";
             }
 
+            //Strings used for the end of the PDA
             String tempInputString = "";
             String tempStacks = "";
 
@@ -224,14 +169,15 @@ public class main{
             else{
                 tempStacks = "e";
             }
-            //System.out.println("Reloop stepnumber:" + stepnumber);
+            //print function that formats the output
             print_output(Integer.toString(stepnumber), state, tempInputString, tempStacks, nextStep.get(2), R, n);
-            //end of while loop
 
         }
 
     }
 
+    //precondition: All strings must be defined
+    //postcondition: prints out a table in format of step state input stack rule Rused with vertical alignment
     public static void print_output(String a, String b, String c, String d, String f, String e, int nlength){
         if(nlength>2){
             String space = " ";
@@ -249,7 +195,6 @@ public class main{
             String p6 = "|" + e + spacerepeat6;
             System.out.println(p1 + p2 + p3 + p4 + p5 + p6);
         }
-        //finish the second part
         else{
             String space = " ";
             String spacerepeat1 = space.repeat(4 - a.length());
@@ -267,6 +212,8 @@ public class main{
             System.out.println(p1 + p2 + p3 + p4 + p5 + p6);
         }
     }
+    //precondition: ArrayList test must not be null
+    //postcondition: fills the ArrayList of test used in the PDA, ranging from a^2b^2$ to a^10b^10$
     public static void filltestcases(ArrayList<String> test){
         String charA = "a";
         String charB = "b";
@@ -276,5 +223,19 @@ public class main{
             temp = charA.repeat(i) + charB.repeat(i) + dollar;
             test.add(temp);
         }
+    }
+
+    //precondition: LinkedHashMap/ArrayList/Strings must not be null
+    //postcondition: Takes in the LinkedHashMap and fills it with ArrayLists. The ArrayLists are filled using the String parameters
+    public static void fillHashMap(LinkedHashMap<ArrayList<String>,ArrayList<String>> hash, String col1, 
+    String col2, String col3, String col4, String col5){
+        ArrayList<String> one = new ArrayList<String>();
+        ArrayList<String> two = new ArrayList<String>();
+        one.add(col1);
+        one.add(col2);
+        two.add(col3);
+        two.add(col4);
+        two.add(col5);
+        hash.put(one,two);
     }
 }
